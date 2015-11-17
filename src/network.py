@@ -35,6 +35,10 @@ class Network(object):
         self.weights = [np.random.randn(y, x)
                         for x, y in zip(sizes[:-1], sizes[1:])]
 
+    def load_from_pickled_parameters(self):
+        self.biases = np.load('../data/biases.npy')
+        self.weights = np.load('../data/weights.npy')
+
     def feedforward(self, a):
         """Return the output of the network if ``a`` is input."""
         for b, w in zip(self.biases, self.weights):
