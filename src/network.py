@@ -36,8 +36,8 @@ class Network(object):
                         for x, y in zip(sizes[:-1], sizes[1:])]
 
     def load_from_pickled_parameters(self):
-        self.biases = np.load('../data/biases.npy')
-        self.weights = np.load('../data/weights.npy')
+        self.biases = np.load('data/biases.npy')
+        self.weights = np.load('data/weights.npy')
 
     def feedforward(self, a):
         """Return the output of the network if ``a`` is input."""
@@ -120,6 +120,10 @@ class Network(object):
             nabla_b[-l] = delta
             nabla_w[-l] = np.dot(delta, activations[-l-1].transpose())
         return (nabla_b, nabla_w)
+
+    def recognize(self, im):
+        output = self.feedforward(im).reshape(1,10)
+        return np.argmax(output)
 
     def evaluate(self, test_data):
         """Return the number of test inputs for which the neural

@@ -28,22 +28,16 @@
 <br />
 <button id="exportImage" onclick="exportImage()">Export Image</button>
 
-<canvas id="scaledDigit" width="28" height="28">
-</canvas>
-
 
 <script type="text/javascript">
 var canvas = document.getElementById("digit");
 var ctx = canvas.getContext('2d');
-var scaledCanvas = document.getElementById("scaledDigit");
-var scaledCtx = scaledCanvas.getContext("2d");
 ctx.strokeStyle = "#111111";
 ctx.lineWidth = 5;
 var drawing = false; // true when mouse is being pressed down
 
 function clearCanvas() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
-  scaledCtx.clearRect(0, 0, canvas.width, canvas.height);
 }
 
 function x() {
@@ -78,10 +72,9 @@ function endCurve() {
 }
 
 function exportImage() {
-  var scaledImage = new Image();
-  scaledImage.id = "scaled";
-  scaledImage.src = canvas.toDataURL();
-  scaledCtx.drawImage(scaledImage, 0, 0, 28, 28);
+  var xhr = new XMLHttpRequest();
+  xhr.open("POST", "//localhost:8080/recognize", true);
+  xhr.send(canvas.toDataURL());
 }
 
 
