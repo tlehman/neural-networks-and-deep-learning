@@ -9,6 +9,9 @@
       canvas {
         background-color: #fff;
       }
+      #output {
+        font-size: 20px;
+      }
     </style>
 </head>
 <body>
@@ -24,21 +27,22 @@
     onmousedown="startCurve()" onmouseup="endCurve()" onmousemove="updateCurve()">
 </canvas>
 
-<button id="clear" onclick="clearCanvas()">Clear</button>
+<button id="clear" onclick="location.reload()">Clear</button>
 <br />
-<button id="exportImage" onclick="exportImage()">Export Image</button>
+<button id="exportImage" onclick="exportImage()">Feed into neural network</button>
+<br />
+<span id="output"></span>
 
 
 <script type="text/javascript">
 var canvas = document.getElementById("digit");
 var ctx = canvas.getContext('2d');
-ctx.strokeStyle = "#111111";
-ctx.lineWidth = 5;
+ctx.strokeStyle = "#000000";
+ctx.lineWidth = 12;
+ctx.fillStyle = 'white';
+ctx.fillRect(0, 0, canvas.width, canvas.height);
 var drawing = false; // true when mouse is being pressed down
-
-function clearCanvas() {
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-}
+var output = document.getElementById("output");
 
 function x() {
   var rect = canvas.getBoundingClientRect();
@@ -71,8 +75,26 @@ function endCurve() {
   ctx.stroke();
 }
 
+function formatResponse(response) {
+  data = JSON.parse(response);
+  var rows = "";
+  for(var i = 0; i < 10; i++) {
+    rows += "<tr><td>";
+    rows += i
+    rows += "</td><td>";
+    rows += data[i];
+    rows += "</td></tr>";
+  }
+  return "<table>" + rows + "</table>";
+}
+
 function exportImage() {
   var xhr = new XMLHttpRequest();
+  xhr.onreadystatechange = function() {
+    if (xhr.readyState == 4 && xhr.status == 200) {
+      output.innerHTML = formatResponse(xhr.responseText);
+    }
+  };
   xhr.open("POST", "//localhost:8080/recognize", true);
   xhr.send(canvas.toDataURL());
 }

@@ -31,16 +31,21 @@ class recognize:
     def POST(self, name):
         # read in posted base64 data, assume PNG, convert to greyscale
         data = web.data()
-        file = cStringIO.StringIO(urllib.urlopen(data).read())
-        img = Image.open(file).convert('L')
+        tmpfile = cStringIO.StringIO(urllib.urlopen(data).read())
+        img = Image.open(tmpfile).convert('L')
+
         # resize to 28x28
         img.thumbnail((28,28), Image.ANTIALIAS)
+
         # convert to vector
         vec = np.asarray(img).reshape((28*28,1)).astype(float)
+
         # feed foward through neural network
-        digit = net.recognize(vec)
-        print digit
-        return digit
+        activations = net.recognize(vec)[0]
+
+        # serialize to json
+        serialized = json.dumps(dict(zip(range(10), activations)))
+        return serialized
 
 if __name__ == "__main__":
     app.run()

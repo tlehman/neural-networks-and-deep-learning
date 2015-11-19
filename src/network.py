@@ -45,6 +45,11 @@ class Network(object):
             a = sigmoid(np.dot(w, a)+b)
         return a
 
+    def softmax(self, w, t = 1.0):
+        e = np.exp(w / t)
+        dist = e / np.sum(e)
+        return dist
+
     def SGD(self, training_data, epochs, mini_batch_size, eta,
             test_data=None):
         """Train the neural network using mini-batch stochastic
@@ -122,8 +127,8 @@ class Network(object):
         return (nabla_b, nabla_w)
 
     def recognize(self, im):
-        output = self.feedforward(im).reshape(1,10)
-        return np.argmax(output)
+        activations = self.feedforward(im).reshape(1,10)
+        return self.softmax(activations)
 
     def evaluate(self, test_data):
         """Return the number of test inputs for which the neural
